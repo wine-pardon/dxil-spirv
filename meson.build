@@ -13,7 +13,7 @@ dxil_spirv_include_dirs = include_directories([
   'debug',
   'third_party/bc-decoder',
   'third_party/glslang-spirv',
-  'third_party/spirv-headers/include/spirv/unified1',
+  '/usr/include/spirv/unified1',
 ])
 
 add_project_arguments(dxil_spirv_compiler.get_supported_arguments([
@@ -81,6 +81,7 @@ dxil_spirv_src = [
 
 dxil_spirv_lib = static_library('dxil-spirv', dxil_spirv_src,
   include_directories : dxil_spirv_include_dirs,
+  install             : true,
   override_options    : [
     'cpp_std='       + dxil_spirv_cpp_std,
     'warning_level=' + dxil_spirv_warning_level
@@ -89,3 +90,9 @@ dxil_spirv_lib = static_library('dxil-spirv', dxil_spirv_src,
 dxil_spirv_dep = declare_dependency(
   include_directories : include_directories('.'),
   link_with           : [ dxil_spirv_lib ])
+
+import('pkgconfig').generate(dxil_spirv_lib,
+  filebase    : 'libdxil-spirv',
+  description : 'DXIL conversion to SPIR-V for D3D12 translation libraries')
+
+install_headers('dxil_spirv_c.h')
